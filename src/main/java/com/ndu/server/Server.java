@@ -42,7 +42,7 @@ public class Server {
 				// launch the thread.
 				t.start();
 			}
-		} catch (Exception e) {
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
