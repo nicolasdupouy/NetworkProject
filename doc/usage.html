@@ -1,17 +1,59 @@
+<!DOCTYPE html>
 <html>
+<head>
+	<meta charset="UTF-8">
+	<title>Usage (parameters)</title>
 
-	<body>
-	Server:
-		MainServer (-exchangeDataMethod object)
-			-port 40000 -debugMode Y -exchangeDataMethod object
-		MainServer (-exchangeDataMethod string)
-			-port 40000 -debugMode Y -exchangeDataMethod string
+	<link rel="stylesheet" media="screen" href="usage.css">
+
+	<meta name="author" content="Nicolas Dupouy">
+  	<meta name="description" content="The parameters usage available for this network server.">
+</head>
+
+<body id="css-zen-garden">			
+<div class="page-wrapper">
+	<section class="intro" id="zen-intro">
+		<header role="banner">
+			<h1>Network project</h1>
+			<h2>Parameters usage</h2>
+		</header>
+
+		<div class="summary" id="zen-summary" role="article">
+			<p>The description of the parameters which can be used with this project.</p>
+			<p>See www.github.com/nicolasdupouy for any updates.</p>
+		</div>
+	</section>	
+
+	<div class="main supporting" id="zen-supporting" role="main">
+	    <div class="explanation" id="zen-explanation" role="article">
+			<h3>Server:</h3>
+			<div class="parametersUsage" id="parametersUsage">
+				MainServer (-exchangeDataMethod object)
+					-port 40000 -debugMode Y -exchangeDataMethod object
+				MainServer (-exchangeDataMethod string)
+					-port 40000 -debugMode Y -exchangeDataMethod string
+			</div>
+		</div>
+	</div>
 	
-	Client:
-		MainClient (-exchangeDataMethod object)
-			-address 127.0.0.1 -port 40000 -debugMode Y -exchangeDataMethod object
-		MainClient (-exchangeDataMethod string)	
-			-address 127.0.0.1 -port 40000 -debugMode Y -exchangeDataMethod string
-			
-	</body>
+	<div class="main supporting" id="zen-supporting" role="main">
+	    <div class="explanation" id="zen-explanation" role="article">
+			<h3>Client:</h3>
+			<div class="parametersUsage" id="parametersUsage">
+				<h4>MainClient (-exchangeDataMethod object)</h4>
+				<p>-address 127.0.0.1 </p>
+				<p>-port 40000 </p>
+				<p>-debugMode Y </p>
+				<p>-exchangeDataMethod object </p>
+				
+				<h4>MainClient (-exchangeDataMethod string)</h4>
+					<p>-address 127.0.0.1 </p>
+					<p>-port 40000 </p>
+					<p>-debugMode Y </p>
+					<p>-exchangeDataMethod string </p>
+			</div>
+		</div>
+	</div>
+</div>
+</body>
 </html>
