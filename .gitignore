@@ -1,2 +1,19 @@
-/bin
-/target
+#/bin
+#/target
+
+# IDE :
+# -----
+# - [Eclipse]
+.settings/
+.metadata/
+
+# Generic files to ignore :
+# -------------------------
+# - Apple temp
+.DS_Store
+
+
+# Languages :
+# -----------
+# - [Java]
+*.class
