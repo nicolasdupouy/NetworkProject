@@ -6,9 +6,8 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 
 import com.ndu.common.communication.CommunicationChannelAbstract;
-import com.ndu.common.communication.CommunicationException;
 import com.ndu.common.constants.CommonConstants;
-import com.ndu.common.exception.PasswordListException;
+import com.ndu.common.exception.TechnicalException;
 import com.ndu.common.message.RequestMessage;
 import com.ndu.common.message.ResponseMessage;
 import com.ndu.common.message.SupportedOrders;
@@ -17,31 +16,24 @@ import com.ndu.server.ClientPOJO;
 import com.ndu.server.constants.ServerConstants;
 
 public class ServerBusinessManager {
-
+	
 	//private HashMap<String,String> usersPasswordMap;
-	private HashMap<Integer,ClientPOJO> clientList;
+	private HashMap<Integer, ClientPOJO> clientList;
 	//private Server server;
 	private CommunicationChannelAbstract communicationChannel;
 	
-	public ServerBusinessManager(/*Server server,*/ CommunicationChannelAbstract communicationChannel) {
+	public ServerBusinessManager(/*Server server,*/CommunicationChannelAbstract communicationChannel) {
 		//this.server = server;
 		this.communicationChannel = communicationChannel;
-		this.clientList = new HashMap<Integer,ClientPOJO>();
+		this.clientList = new HashMap<Integer, ClientPOJO>();
 	}
 	
-	public void displayNewClientConnectionInformations(Socket s) throws CommunicationException {
+	public void displayNewClientConnectionInformations(Socket s) throws TechnicalException {
 		// display new incomer
-		communicationChannel.writeToTerminal("Server: receive a request from addr=/" 
-						+ s.getInetAddress().getHostAddress() 
-						+ "(" + s.getInetAddress().getCanonicalHostName() + ")" 
-						+ ",port=" + s.getPort()
-						+ " ==> TO  SERVER("
-						+ "localAddress=" + s.getLocalAddress()
-						+ ",localPort=" + s.getLocalPort()
-						+ ")");
+		communicationChannel.writeToTerminal("Server: receive a request from addr=/" + s.getInetAddress().getHostAddress() + "(" + s.getInetAddress().getCanonicalHostName() + ")" + ",port=" + s.getPort() + " ==> TO  SERVER(" + "localAddress=" + s.getLocalAddress() + ",localPort=" + s.getLocalPort() + ")");
 	}
 	
-	public void addToClientList(Socket s) throws CommunicationException {
+	public void addToClientList(Socket s) throws TechnicalException {
 		
 		displayNewClientConnectionInformations(s);
 		
@@ -52,13 +44,12 @@ public class ServerBusinessManager {
 		clientList.put(s.hashCode(), clientPOJO);
 	}
 	
-	public boolean removeFromClientList(Socket clientSocket) throws CommunicationException {
+	public boolean removeFromClientList(Socket clientSocket) throws TechnicalException {
 		if (clientList.containsKey(clientSocket.hashCode())) {
 			ClientPOJO clientPOJO = clientList.remove(clientSocket.hashCode());
 			communicationChannel.writeToTerminal(ServerConstants.COMMUNICATION_CLIENT_DISCONNECTED + clientPOJO);
 			return true;
-		}
-		else {
+		} else {
 			return false;
 		}
 	}
@@ -77,8 +68,7 @@ public class ServerBusinessManager {
 			
 			if (login(clientHashCode, orderMessage)) {
 				message = CommonConstants.S_OK;
-			}
-			else {
+			} else {
 				message = CommonConstants.S_KO;
 			}
 		}
@@ -88,8 +78,7 @@ public class ServerBusinessManager {
 			
 			if (logout(clientHashCode)) {
 				message = CommonConstants.S_OK;
-			}
-			else {
+			} else {
 				message = CommonConstants.S_KO;
 			}
 		}
@@ -107,7 +96,6 @@ public class ServerBusinessManager {
 		return new ResponseMessage(message);
 	}
 	
-	
 	/**
 	 * 
 	 * @param clientHashCode
@@ -120,13 +108,13 @@ public class ServerBusinessManager {
 		//"the user had login already"
 		//==> add
 		//addClient(message.getSenderID());
-
+		
 		try {
 			ArrayList<String> parameters = orderMessage.getParameters();
 			if (parameters.size() == 2) {
 				String userID = parameters.get(0);
 				String password = parameters.get(1);
-
+				
 				if (LoginPasswordListManagement.getInstance().isLoginAuthorized(userID, password)) {
 					ClientPOJO clientPOJO = clientList.get(clientHashCode);
 					clientPOJO.setUserID(userID);
@@ -134,15 +122,15 @@ public class ServerBusinessManager {
 					clientPOJO.setConnected(true);
 					return true;
 				}
-//				else {
-//					// userID/password combination unauthorised
-//					return false;
-//				}
+				//				else {
+				//					// userID/password combination unauthorised
+				//					return false;
+				//				}
 			}
-//			else {
-//				return
-//			}
-		} catch (PasswordListException e) {
+			//			else {
+			//				return
+			//			}
+		} catch (TechnicalException e) {
 			e.printStackTrace();
 			return false;
 		}
@@ -154,8 +142,7 @@ public class ServerBusinessManager {
 		if (clientList.containsKey(clientHashCode)) {
 			clientList.remove(clientHashCode);
 			return true;
-		}
-		else {
+		} else {
 			return false;
 		}
 	}
@@ -163,7 +150,7 @@ public class ServerBusinessManager {
 	private synchronized String listClients() {
 		//clientList.entrySet()
 		String message;
-		for (Entry<Integer,ClientPOJO> clientEntry : clientList.entrySet()) {
+		for (Entry<Integer, ClientPOJO> clientEntry : clientList.entrySet()) {
 			
 		}
 		return ""; //message;

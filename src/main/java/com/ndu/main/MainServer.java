@@ -1,26 +1,18 @@
 package com.ndu.main;
 
-import java.io.IOException;
-
-import com.ndu.common.exception.ParameterException;
-import com.ndu.common.exception.PasswordListException;
+import com.ndu.common.exception.TechnicalException;
 import com.ndu.server.Server;
+import com.ndu.server.ServerImpl;
 
 public class MainServer {
-
-	public static void main(String [] argv) {
+	
+	public static void main(String[] argv) {
 		
 		try {
-			Server server = new Server(argv);
+			Server server = new ServerImpl(argv);
 			server.launchServer();
-		} catch (ParameterException e) {
-			e.printStackTrace();
-		} catch (PasswordListException e) {
+		} catch (TechnicalException e) {
 			e.printStackTrace();
 		}
-		catch (IOException e) {
-			e.printStackTrace();
-		}
-
 	}
 }

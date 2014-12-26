@@ -9,65 +9,72 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
 
-import com.ndu.client.constants.ClientConstants;
+import com.ndu.common.constants.CommonConstants;
+import com.ndu.common.exception.TechnicalException;
 
 public class CommunicationChannelByObject extends CommunicationChannelAbstract {
-
+	
 	// data canals FROM/TO server
 	// FROM
 	private ObjectInputStream correspondantIN;
 	// TO
 	private ObjectOutputStream correspondantOUT;
-
-		
+	
 	public CommunicationChannelByObject(String type) {
 		super(type);
 	}
-
-	public CommunicationChannelByObject(String type, Socket socket) throws IOException {
+	
+	public CommunicationChannelByObject(String type, Socket socket) throws TechnicalException {
 		super(type);
 		
-		this.setTerminalIN( new BufferedReader(new InputStreamReader(System.in)) );
-		this.setTerminalOUT( new BufferedWriter(new OutputStreamWriter(System.out)) );
+		this.setTerminalIN(new BufferedReader(new InputStreamReader(System.in)));
+		this.setTerminalOUT(new BufferedWriter(new OutputStreamWriter(System.out)));
 		
-		this.setCorrespondantOUT( new ObjectOutputStream(socket.getOutputStream()) );
-		this.setCorrespondantIN( new ObjectInputStream(socket.getInputStream()) );
+		try {
+			this.setCorrespondantOUT(new ObjectOutputStream(socket.getOutputStream()));
+			this.setCorrespondantIN(new ObjectInputStream(socket.getInputStream()));
+		} catch (IOException e) {
+			TechnicalException.throwCommunicationException(CommonConstants.EXCEPTION_CONNECTION_SOCKET, e);
+		}
 	}
 	
-
 	@Override
 	public void setCorrespondantIN(Object correspondantIN) {
-		this.correspondantIN = (ObjectInputStream)correspondantIN;
+		this.correspondantIN = (ObjectInputStream) correspondantIN;
 	}
-
-	@Override
-	public void setCorrespondantOUT(Object correspondantOUT) throws IOException {
-		this.correspondantOUT = (ObjectOutputStream)correspondantOUT;
-		this.correspondantOUT.flush();
-	}
-
 	
 	@Override
-	public Object readFromCorrespondant() throws CommunicationException {
+	public void setCorrespondantOUT(Object correspondantOUT) throws TechnicalException {
+		this.correspondantOUT = (ObjectOutputStream) correspondantOUT;
 		
-		Object object = null; 
 		try {
-			object = (Object)(correspondantIN.readObject());
-		} catch(Exception e) {
-			throw new CommunicationException("Exception while reading from correspondant", e);
-		} 
+			this.correspondantOUT.flush();
+		} catch (IOException e) {
+			TechnicalException.throwCommunicationException(CommonConstants.EXCEPTION_CONNECTION_SOCKET, e);
+		}
+	}
+	
+	@Override
+	public Object readFromCorrespondant() throws TechnicalException {
+		
+		Object object = null;
+		try {
+			object = (Object) (correspondantIN.readObject());
+		} catch (Exception e) {
+			TechnicalException.throwCommunicationException("Exception while reading from correspondant", e);
+		}
 		return object;
 	}
 	
 	@Override
-	public void writeToCorrespondant(/*Message message*/ Object object) throws CommunicationException {
+	public void writeToCorrespondant(/*Message message*/Object object) throws TechnicalException {
 		try {
 			correspondantOUT.writeObject(object);
 			//correspondantOUT.write(message.formatMessageContent());
 			//correspondantOUT.write("\n");
 			correspondantOUT.flush();
 		} catch (IOException e) {
-			throw new CommunicationException(ClientConstants.EXCEPTION_WRITE_CORRESPONDANT, e);
+			TechnicalException.throwCommunicationException(CommonConstants.EXCEPTION_WRITE_CORRESPONDANT, e);
 		}
 	}
 	

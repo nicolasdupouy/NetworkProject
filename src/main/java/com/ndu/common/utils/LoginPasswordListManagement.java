@@ -6,14 +6,14 @@ import java.util.HashMap;
 import java.util.StringTokenizer;
 
 import com.ndu.common.constants.CommonConstants;
-import com.ndu.common.exception.PasswordListException;
+import com.ndu.common.exception.TechnicalException;
 
 public class LoginPasswordListManagement {
-
-	private static LoginPasswordListManagement instance = null;
-	private HashMap<String,String> passwordList = new HashMap<String,String>();
 	
-	public static void initInstance(String passwordFileName) throws PasswordListException {
+	private static LoginPasswordListManagement instance = null;
+	private HashMap<String, String> passwordList = new HashMap<String, String>();
+	
+	public static void initInstance(String passwordFileName) throws TechnicalException {
 		if (instance == null) {
 			if (passwordFileName != null) {
 				instance = new LoginPasswordListManagement(passwordFileName);
@@ -23,39 +23,37 @@ public class LoginPasswordListManagement {
 		}
 	}
 	
-	public static LoginPasswordListManagement getInstance() throws PasswordListException {
+	public static LoginPasswordListManagement getInstance() throws TechnicalException {
 		if (instance == null) {
-			throw new PasswordListException("LoginPasswordListManagement " + CommonConstants.EXCEPTION_MUST_BE_INITIALIZED);
+			TechnicalException.throwParameterException("LoginPasswordListManagement " + CommonConstants.EXCEPTION_MUST_BE_INITIALIZED);
 		}
 		return instance;
 	}
 	
-	private LoginPasswordListManagement(String passwordFileName) throws PasswordListException {
-
-		try{
+	private LoginPasswordListManagement(String passwordFileName) throws TechnicalException {
+		
+		try {
 			BufferedReader br = new BufferedReader(new FileReader(passwordFileName));
 			try {
 				String line;
 				while ((line = br.readLine()) != null) {
 					StringTokenizer st = new StringTokenizer(line, CommonConstants.PASSWORD_SEPARATOR);
-					while(st.hasMoreElements()) {
+					while (st.hasMoreElements()) {
 						passwordList.put(st.nextToken(), st.nextToken());
 					}
 				}
-			}
-			finally {
+			} finally {
 				br.close();
 			}
-		}catch (Exception e){
+		} catch (Exception e) {
 			System.err.println("Error: " + e.getMessage());
 			e.printStackTrace();
-			throw new PasswordListException(CommonConstants.EXCEPTION_READING_PASSWORD_LIST, e);
+			TechnicalException.throwPasswordException(CommonConstants.EXCEPTION_READING_PASSWORD_LIST, e);
 		}
 	}
 	
 	public boolean isLoginAuthorized(String login, String password) {
-		if (passwordList.containsKey(login)
-			&& passwordList.get(login).equals(password)) {
+		if (passwordList.containsKey(login) && passwordList.get(login).equals(password)) {
 			return true;
 		}
 		return false;

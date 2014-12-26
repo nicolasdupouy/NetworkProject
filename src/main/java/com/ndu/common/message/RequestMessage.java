@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.StringTokenizer;
 
 import com.ndu.common.constants.CommonConstants;
+import com.ndu.common.exception.TechnicalException;
 
 public class RequestMessage implements Message, Serializable {
 	
@@ -20,16 +21,15 @@ public class RequestMessage implements Message, Serializable {
 	public String getActionType() {
 		return actionType;
 	}
-
+	
 	public ArrayList<String> getParameters() {
 		return parameters;
 	}
-
-	public RequestMessage(String line, boolean isCommandLine) throws MessageException {
+	
+	public RequestMessage(String line, boolean isCommandLine) throws TechnicalException {
 		if (isCommandLine) {
 			constructMessageFromCommandLine(line);
-		}
-		else {
+		} else {
 			constructMessageFromSocketLine(line);
 		}
 	}
@@ -39,7 +39,7 @@ public class RequestMessage implements Message, Serializable {
 	 * @param commandLine
 	 * @throws MessageException
 	 */
-	private void constructMessageFromCommandLine(String commandLine) throws MessageException {
+	private void constructMessageFromCommandLine(String commandLine) throws TechnicalException {
 		
 		StringTokenizer st = new StringTokenizer(commandLine);
 		String choosenOperation = st.nextToken();
@@ -50,12 +50,12 @@ public class RequestMessage implements Message, Serializable {
 				this.parameters.add(st.nextToken());
 				this.parameters.add(st.nextToken());
 			}
-			/*else if (SupportedOrders.isLogoutType(choosenOperation)) {
-				this.type = choosenOperation;
-			}*/
-		}
-		else {
-			throw new MessageException("Message::Unsuported operation : " + choosenOperation);
+			/*
+			 * else if (SupportedOrders.isLogoutType(choosenOperation)) {
+			 * this.type = choosenOperation; }
+			 */
+		} else {
+			TechnicalException.throwMessageException("Message::Unsuported operation : " + choosenOperation);
 		}
 	}
 	
@@ -64,7 +64,7 @@ public class RequestMessage implements Message, Serializable {
 	 * @param socketLine
 	 * @throws MessageException
 	 */
-	private void constructMessageFromSocketLine(String socketLine) throws MessageException {
+	private void constructMessageFromSocketLine(String socketLine) {
 		
 		StringTokenizer stSocketLine = new StringTokenizer(socketLine, CommonConstants.S_MESSAGE_SEPARATOR_1);
 		this.actionType = stSocketLine.nextToken();
@@ -79,23 +79,23 @@ public class RequestMessage implements Message, Serializable {
 			this.parameters.add(stParameters.nextToken());
 		}
 		
-		/*if (stSocketLine.hasMoreTokens()) {
-			this.messageContent = stSocketLine.nextToken();
-		}*/
+		/*
+		 * if (stSocketLine.hasMoreTokens()) { this.messageContent =
+		 * stSocketLine.nextToken(); }
+		 */
 	}
 	
 	public String formatMessageContent() {
 		String contentSentThruSocket = null;
 		contentSentThruSocket = actionType;
 		
-		if (parameters != null
-				&& parameters.size() != 0) {
+		if (parameters != null && parameters.size() != 0) {
 			
 			contentSentThruSocket += CommonConstants.S_MESSAGE_SEPARATOR_1;
 			Iterator<String> itParameters = parameters.iterator();
-			while( itParameters.hasNext() ) {
+			while (itParameters.hasNext()) {
 				contentSentThruSocket += itParameters.next();
-				if ( itParameters.hasNext() ) {
+				if (itParameters.hasNext()) {
 					contentSentThruSocket += CommonConstants.S_MESSAGE_SEPARATOR_2;
 				}
 			}
@@ -105,12 +105,13 @@ public class RequestMessage implements Message, Serializable {
 	
 	public String toString() {
 		return "ActionType=" + actionType + " / Parameters=" + parameters + "\n";
-		//return "ActionType=" + actionType + " / Parameters=" + parameters + " / Content=" + messageContent + "\n";
-		/*return "*****************" 							+ "\n"
-		     + "* type       = " 	+ type 					+ "\n"
-		     + "* parameters = " 	+ parameters 			+ "\n"
-			 + "* content    = " 	+ getMessageContent()	+ "\n"
-			 + "*****************";*/
+		// return "ActionType=" + actionType + " / Parameters=" + parameters +
+		// " / Content=" + messageContent + "\n";
+		/*
+		 * return "*****************" + "\n" + "* type       = " + type + "\n" +
+		 * "* parameters = " + parameters + "\n" + "* content    = " +
+		 * getMessageContent() + "\n" + "*****************";
+		 */
 	}
-
+	
 }

@@ -2,18 +2,17 @@ package com.ndu.client.business;
 
 import com.ndu.client.constants.ClientConstants;
 import com.ndu.common.communication.CommunicationChannelAbstract;
-import com.ndu.common.communication.CommunicationException;
 import com.ndu.common.constants.CommonConstants;
-import com.ndu.common.exception.ExitException;
+import com.ndu.common.exception.TechnicalException;
 import com.ndu.common.message.RequestMessage;
 import com.ndu.common.message.ResponseMessage;
 import com.ndu.common.message.SupportedOrders;
 
 public class ClientBusinessManager {
-
+	
 	private boolean isClientConnected = false;
 	private CommunicationChannelAbstract communicationChannel;
-
+	
 	public ClientBusinessManager(CommunicationChannelAbstract communicationChannel) {
 		this.communicationChannel = communicationChannel;
 	}
@@ -21,15 +20,14 @@ public class ClientBusinessManager {
 	public boolean isClientConnected() {
 		return isClientConnected;
 	}
-
-	public void manageServerResponse(RequestMessage requestMessage, ResponseMessage responseMessage) throws CommunicationException, ExitException {
-
+	
+	public void manageServerResponse(RequestMessage requestMessage, ResponseMessage responseMessage) throws TechnicalException {
+		
 		if (SupportedOrders.isLoginType(requestMessage.getActionType())) {
 			if (responseMessage.formatMessageContent().equals(CommonConstants.S_OK)) {
 				isClientConnected = true;
 				communicationChannel.writeToTerminal(ClientConstants.CONNECTION_GRANTED);
-			}
-			else {
+			} else {
 				communicationChannel.writeToTerminal(ClientConstants.CONNECTION_REFUSED);
 			}
 		}
@@ -39,11 +37,10 @@ public class ClientBusinessManager {
 			isClientConnected = false;
 			if (responseMessage.formatMessageContent().equals(CommonConstants.S_OK)) {
 				communicationChannel.writeToTerminal(ClientConstants.EXCEPTION_CONNECTION_ENDED_SUCCESS);
-				throw new ExitException(ClientConstants.EXCEPTION_CONNECTION_ENDED_SUCCESS);
-			}
-			else {
+				TechnicalException.throwExitException(ClientConstants.EXCEPTION_CONNECTION_ENDED_SUCCESS);
+			} else {
 				communicationChannel.writeToTerminal(ClientConstants.EXCEPTION_CONNECTION_ENDED_ERROR);
-				throw new ExitException(ClientConstants.EXCEPTION_CONNECTION_ENDED_ERROR);
+				TechnicalException.throwExitException(ClientConstants.EXCEPTION_CONNECTION_ENDED_ERROR);
 			}
 			
 		}
